@@ -33,7 +33,7 @@
 
 struct _MyString
 {
-	char *_string;
+	char *_array;
 	size_t _length; // todo verify if long needed
 };
 
@@ -58,7 +58,7 @@ static char *charArrayAlloc(long arraySize)
 MyString *myStringAlloc() // toTest
 {
 	MyString *pNewString = (MyString *)malloc(sizeof(MyString));
-	pNewString->_string = charArrayAlloc(0);
+	pNewString->_array = charArrayAlloc(0);
 	pNewString->_length = 0;
 	return pNewString;
 }
@@ -67,8 +67,10 @@ void myStringFree(MyString *str) // toTest
 {
 	if (str != NULL)
 	{
-		free(str->_string);
-		free(str);
+		free(str->_array);
+		str->_array = NULL;
+		free(str); // toCheck why gives weired values? (debug)
+//		str = NULL;
 	}
 }
 
@@ -77,17 +79,36 @@ MyString *myStringClone(const MyString *str) // toTest
 	MyString *pClonedString = myStringAlloc();
 	if (pClonedString != NULL)
 	{
-		memcpy(pClonedString->_string, str->_string, str->_length);
-//		pClonedString->_string = str->_string; // todo needed?
+		pClonedString->_array = charArrayAlloc(str->_length);
+		memcpy(pClonedString->_array, str->_array, str->_length);
 		pClonedString->_length = str->_length;
 	}
 	return pClonedString;
 }
 
-MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
+MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other) // toTest
 {
-	// todo check size of both strings
-
+	if (other == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	else if (str == NULL)
+	{
+		str = myStringAlloc();
+		str = myStringClone(other);
+		return MYSTRING_SUCCESS;
+	}
+	else if (str->_length == other->_length)
+	{
+		memcpy(str->_array, other->_array, other->_length);
+		return MYSTRING_SUCCESS;
+	}
+	else if (str->_length > other->_length || str->_length < other->_length)
+	{
+		free(str->_array);
+		str->_array = charArrayAlloc(other->_length);
+		memcpy(str->_array, other->_array, other->_length);
+	}
 	return MYSTRING_ERROR;
 }
 
@@ -157,6 +178,29 @@ int myStringEqual(const MyString *str1, const MyString *str2)
 
 #ifndef NDEBUG
 
+/**
+ * @brief A procedure to help creating meaningful arrays with ease for testing purposes.
+ * @param a pointer to MyString type.
+ * @param a character to fill the array with.
+ * @param new size for the array.
+ * @return MYSTRING_SUCCESS if the array was initialized, MYSTRING_ERROR otherwise.
+ */
+static MyStringRetVal testArrayAlloc(MyString *str, int c, size_t size)
+{
+	if (str == NULL)
+	{
+		str = myStringAlloc();
+	}
+
+	free(str->_array);
+	str->_array = NULL;
+	str->_array = charArrayAlloc(size);
+	memset(str->_array, c, size);
+	str->_length = size;
+	MYSTRING_SUCCESS;
+	return MYSTRING_ERROR;
+}
+
 int main()
 {
 	/* MyString Alloc Test */
@@ -166,23 +210,50 @@ int main()
 	/* MyString Free Test */
 	// free an already created myString.
 	myStringFree(newMyString); // todo how to test if it works?
+	newMyString = NULL;
 
 	/* MyString Clone */
 	// clone myList. verify different array pointers.
+	MyString *aString = myStringAlloc();
+	MyString *bString = myStringClone(aString);
 
 	/* Set From MyString */
-	// set from identical size.
-	// set from bigger list.
-	// set from smaller size.
+	int retVal = 0;
+	// other == NULL
+	MyString *other = NULL;
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
 
+	// str == NULL
+	other = myStringAlloc();
+	myStringFree(aString);
+	aString = NULL; // todo note: have to null this after free, because it can't be done from
+	// inside a function. pass-by-value.
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	// set from identical size.
+	testArrayAlloc(other, 'b', 8);
+	testArrayAlloc(aString, 't', 8);
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	// set from bigger/smaller list.
+	myStringFree(aString);
+	aString = myStringAlloc();
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
 
 	/* mem games */
+	char *test = charArrayAlloc(4);
+	memset(test, 't', 5);
 	char *pStr = "hi all";
 //	char *pNewStr = NULL;
 	char *pNewStr = (char *)malloc(6*sizeof(char));
 	memcpy(pNewStr, pStr, 6);
 	puts(pNewStr);
-
+	size_t a = 5;
+	size_t b = a;
 	return 0;
 }
 
