@@ -29,18 +29,20 @@
  ********************************************************************************/
 
 // ------------------------------ includes ------------------------------
-
+// todo where to put includes?
 #include <stdio.h>
 #include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
 
 // -------------------------- const definitions -------------------------
 
-/*
-* mystr error code
-*/
+/**
+ * mystr error code
+ */
 #define MYSTR_ERROR_CODE -999
 
-/*
+/**
  * MyString represents a manipulable string.
  */
 struct _MyString;

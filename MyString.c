@@ -1,28 +1,93 @@
-#include <stddef.h>
+#include <string.h>
 #include "MyString.h"
 
-// todo string size function/string size variable.
+// todo update doc
+/********************************************************************************
+ * @file MyString.h
+ * @author  slabc <slbac@cs.huji.ac.il>
+ * @version 1.0
+ * @date 9 Aug 2015
+ *
+ * @brief The SLabC Standard Strings library.
+ *
+ * @section LICENSE
+ * This program is not a free software;
+ *
+ * @section DESCRIPTION
+ * The LabC Standard Strings library.
+ *
+ * This library provides a string type with extra capabilities.
+ *
+ * The library provides the following features:
+ *  - basic string operations
+ *  - conversion to other types (ints, C strings)
+ *
+ * Error handling
+ * ~~~~~~~~~~~~~~
+ * Most functions may fail due to failure to allocate dynamic memory. When
+ * this happens the functions will return an appropriate failure value. If this
+ * happens, then the state of the other outputs of the function is undefined.
+ ********************************************************************************/
 
-struct _MyString *myStringAlloc()
+// -------------------------- const definitions -------------------------
+
+struct _MyString
 {
-	// todo find a mechanism for EOL
-	return NULL;
+	char *_string;
+	size_t _length; // todo verify if long needed
+};
+
+// --------------------------- My functions -----------------------------
+
+/**
+ * @brief A function that allocates memory for an array of a given size.
+ * @param The number of Bytes to allocate in the area in memory. 0 will allocate a NULL pointer.
+ * @return A pointer to the new area in memory.
+ */
+static char *charArrayAlloc(long arraySize)
+{
+	if (arraySize == 0)
+	{
+		return NULL;
+	}
+	return (char *)malloc(arraySize * sizeof(char));
 }
 
-void myStringFree(MyString *str)
-{
+// ------------------------------ functions -----------------------------
 
+MyString *myStringAlloc() // toTest
+{
+	MyString *pNewString = (MyString *)malloc(sizeof(MyString));
+	pNewString->_string = charArrayAlloc(0);
+	pNewString->_length = 0;
+	return pNewString;
 }
 
-
-MyString *myStringClone(const MyString *str)
+void myStringFree(MyString *str) // toTest
 {
-	return NULL;
+	if (str != NULL)
+	{
+		free(str->_string);
+		free(str);
+	}
+}
+
+MyString *myStringClone(const MyString *str) // toTest
+{
+	MyString *pClonedString = myStringAlloc();
+	if (pClonedString != NULL)
+	{
+		memcpy(pClonedString->_string, str->_string, str->_length);
+//		pClonedString->_string = str->_string; // todo needed?
+		pClonedString->_length = str->_length;
+	}
+	return pClonedString;
 }
 
 MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
 {
 	// todo check size of both strings
+
 	return MYSTRING_ERROR;
 }
 
@@ -87,3 +152,38 @@ int myStringEqual(const MyString *str1, const MyString *str2)
 
 	return 0;
 }
+
+// ------------------------- unit-testing ------------------------------
+
+#ifndef NDEBUG
+
+int main()
+{
+	/* MyString Alloc Test */
+	// create a new empty myString.
+	MyString *newMyString = myStringAlloc(); // how to test this?
+
+	/* MyString Free Test */
+	// free an already created myString.
+	myStringFree(newMyString); // todo how to test if it works?
+
+	/* MyString Clone */
+	// clone myList. verify different array pointers.
+
+	/* Set From MyString */
+	// set from identical size.
+	// set from bigger list.
+	// set from smaller size.
+
+
+	/* mem games */
+	char *pStr = "hi all";
+//	char *pNewStr = NULL;
+	char *pNewStr = (char *)malloc(6*sizeof(char));
+	memcpy(pNewStr, pStr, 6);
+	puts(pNewStr);
+
+	return 0;
+}
+
+#endif // NDEBUG
