@@ -55,11 +55,6 @@ static char *charArrayAlloc(long arraySize)
 	return (char *)malloc(arraySize * sizeof(char));
 }
 
-/**
- *
- */
-static; // todo
-
 // ------------------------------ functions -----------------------------
 
 MyString *myStringAlloc() // toTest
