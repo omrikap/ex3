@@ -46,12 +46,19 @@ struct _MyString
  */
 static char *charArrayAlloc(long arraySize)
 {
-	if (arraySize == 0)
+	if (arraySize == 0) // todo what should be here?
 	{
-		return NULL;
+		char *str = (char *)malloc(arraySize * sizeof(1));
+		str[0] = NULL;
+		return str;
 	}
 	return (char *)malloc(arraySize * sizeof(char));
 }
+
+/**
+ *
+ */
+static; // todo
 
 // ------------------------------ functions -----------------------------
 
@@ -86,17 +93,11 @@ MyString *myStringClone(const MyString *str) // toTest
 	return pClonedString;
 }
 
-MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other) // toTest
+MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other) // toTest fixme
 {
-	if (other == NULL)
+	if (other == NULL || str == NULL)
 	{
 		return MYSTRING_ERROR;
-	}
-	else if (str == NULL)
-	{
-		str = myStringAlloc();
-		str = myStringClone(other);
-		return MYSTRING_SUCCESS;
 	}
 	else if (str->_length == other->_length)
 	{
@@ -112,20 +113,43 @@ MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other) // 
 	return MYSTRING_ERROR;
 }
 
-MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *))
+MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *)) // toTest
 {
-	// gets a pointer to a function
-	// for loop
-	// pointers inside arrays
-	return MYSTRING_ERROR;
+	char *tmp = (char *)malloc(str->_length);
+	if (tmp == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	int tmp_index = 0;
+	for (int i=0; i < str->_length; ++i)
+	{
+		if (!filt((char *) str->_array[i]))
+		{
+			tmp[tmp_index] = str->_array[i];
+			tmp_index++;
+		}
+	}
+	free(str->_array);
+	str->_array = tmp;
+	return MYSTRING_SUCCESS;
 }
 
-MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
+MyStringRetVal myStringSetFromCString(MyString *str, const char *cString) // toTest
 {
-	// calculation allocated memory (reaching the last index of an array) to check '\0'
-	return MYSTRING_ERROR;
+	free(str->_array);
+	str->_array = charArrayAlloc(0);
+	if (str->_array == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	int i = 0;
+	while (*cString)
+	{
+		str->_array[i] = *cString++;
+		i++;
+	}
+	return MYSTRING_SUCCESS;
 }
-
 
 MyStringRetVal myStringSetFromInt(MyString *str, int n)
 {
@@ -185,20 +209,18 @@ int myStringEqual(const MyString *str1, const MyString *str2)
  * @param new size for the array.
  * @return MYSTRING_SUCCESS if the array was initialized, MYSTRING_ERROR otherwise.
  */
-static MyStringRetVal testArrayAlloc(MyString *str, int c, size_t size)
+static MyString* testArrayAlloc(MyString *str, int c, size_t size) // fixme
 {
 	if (str == NULL)
 	{
 		str = myStringAlloc();
 	}
-
 	free(str->_array);
 	str->_array = NULL;
 	str->_array = charArrayAlloc(size);
 	memset(str->_array, c, size);
 	str->_length = size;
-	MYSTRING_SUCCESS;
-	return MYSTRING_ERROR;
+	return str;
 }
 
 int main()
@@ -219,12 +241,12 @@ int main()
 
 	/* Set From MyString */
 	int retVal = 0;
-	// other == NULL
+	// other == NULL should return ERROR
 	MyString *other = NULL;
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
 
-	// str == NULL
+	// str == NULL should return ERROR. Can't change the pointer itself.
 	other = myStringAlloc();
 	myStringFree(aString);
 	aString = NULL; // todo note: have to null this after free, because it can't be done from
@@ -232,13 +254,13 @@ int main()
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
 
-	// set from identical size.
+	// set from identical size. should return SUCCESS
 	testArrayAlloc(other, 'b', 8);
 	testArrayAlloc(aString, 't', 8);
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
 
-	// set from bigger/smaller list.
+	// set from bigger/smaller list. should return SUCCESS
 	myStringFree(aString);
 	aString = myStringAlloc();
 	retVal = myStringSetFromMyString(aString, other);
