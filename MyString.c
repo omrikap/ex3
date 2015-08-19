@@ -48,11 +48,27 @@ static char *charArrayAlloc(long arraySize)
 {
 	if (arraySize == 0) // todo what should be here?
 	{
-		char *str = (char *)malloc(arraySize * sizeof(1));
-		str[0] = NULL;
-		return str;
+		return NULL;
 	}
 	return (char *)malloc(arraySize * sizeof(char));
+}
+
+/**
+ * @brief Uses to reallocate the memory size of a MyString struct.
+ * @param str the string to change it's length.
+ * @param size the new size.
+ * @return void.
+ */
+static void reallocMyString(MyString *str, size_t size)
+{
+	if (str->_length >= size)
+	{
+		return;
+	}
+	else if (str->_length < size)
+	{
+		realloc(str->_array, size);
+	}
 }
 
 // ------------------------------ functions -----------------------------
@@ -118,7 +134,7 @@ MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *)) // toTe
 	int tmp_index = 0;
 	for (int i=0; i < str->_length; ++i)
 	{
-		if (!filt((char *) str->_array[i]))
+		if (!filt(&str->_array[i]))  // todo might not be the right argument.
 		{
 			tmp[tmp_index] = str->_array[i];
 			tmp_index++;
@@ -131,46 +147,122 @@ MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *)) // toTe
 
 MyStringRetVal myStringSetFromCString(MyString *str, const char *cString) // toTest
 {
-	free(str->_array);
-	str->_array = charArrayAlloc(0);
-	if (str->_array == NULL)
+	if (str == NULL || cString == NULL)
 	{
 		return MYSTRING_ERROR;
 	}
-	int i = 0;
-	while (*cString)
+	const char *head = cString;
+	size_t i = 0;
+	while (*cString++)
 	{
-		str->_array[i] = *cString++;
+//		*cString++;
 		i++;
 	}
+	str->_length = i;
+	free(str->_array);
+	str->_array = charArrayAlloc(i);
+	memcpy(str->_array, head, i);
 	return MYSTRING_SUCCESS;
 }
 
-MyStringRetVal myStringSetFromInt(MyString *str, int n)
+/**
+ * @brief return the given int without the last digit.
+ * @param integer to remove it's last gidit.
+ */
+static int reduceModulo(int n)
 {
-	// modulo to extract digits -> make them chars
-	// todo what if size does not match?
-	return MYSTRING_ERROR;
+	return (n - (n % 10)) / 10;
+
 }
 
-int myStringToInt(const MyString *str)
+/**
+ * @brief find the number of digits in a given int.
+ */
+static size_t findIntLentgh(int n)
 {
-	// verify the string containing int content.
-	// how to convert character to int. ascii?
-	return 0;
+	size_t length = 0;
+	if (n != 0)
+	{
+		while (n != 0)
+		{
+			n = reduceModulo(n);
+			length++;
+		}
+	}
+	return length;
 }
 
-char *myStringToCString(const MyString *str)
+MyStringRetVal myStringSetFromInt(MyString *str, int n) // toTest
 {
-	// add '\0'. what more?
-	return NULL;
+	if (str == NULL || &n == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	bool negative = false;
+	size_t intLength;
+	if (n < 0)
+	{
+		negative = true;
+		n = abs(n);
+		intLength = findIntLentgh(n) + 1;
+	}
+	else
+	{
+		intLength = findIntLentgh(n);
+	}
+	reallocMyString(str, intLength); // todo error if this fails
+	while (((intLength > 0) && (!negative)) || ((intLength > 1) && (negative)))
+	{
+		str->_array[intLength - 1] = (char) ((n % 10) + 48);
+		n = reduceModulo(n);
+		intLength--;
+	}
+	if (negative)
+		str->_array[0] = '-';
+	return MYSTRING_SUCCESS;
+}
+
+int myStringToInt(const MyString *str) // toTest
+{
+	// todo verify the string containing int content.
+	int result = 0;
+	bool negative = false;
+	int i = 0;
+	if (str->_array[0] == '-')
+	{
+		negative = true;
+		i = 1;
+	}
+	for (; i < str->_length; ++i)
+	{
+		result *= 10;
+		result += (str->_array[i] - 48);
+	}
+	if (negative)
+	{
+		result *= (-1);
+	}
+	return result;
+}
+
+char *myStringToCString(const MyString *str) // toTest
+{
+	MyString *newString = myStringClone(str);
+	reallocMyString(newString, str->_length + 1);
+	str->_array[str->_length-1] = '\0';
+	return str->_array;
 }
 
 MyStringRetVal myStringCat(MyString *dest, const MyString *src)
 {
-	// todo implement before mystringToCString. It's doing the same with a static dest.
-	// use memcpy
-	return MYSTRING_ERROR;
+	if (dest == NULL || src == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	size_t copy_index = dest->_length;
+	reallocMyString(dest, dest->_length + src->_length);
+	memcpy(&dest->_array[copy_index+1], src, src->_length);
+	return MYSTRING_SUCCESS;
 }
 
 MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result)
@@ -193,9 +285,26 @@ int myStringEqual(const MyString *str1, const MyString *str2)
 	return 0;
 }
 
+unsigned long myStringMemUsage(const MyString *str1)
+{
+	return 0;
+}
+
+unsigned long myStringLen(const MyString *str1)
+{
+	return 0;
+}
+
+MyStringRetVal myStringWrite(const MyString *str, FILE *stream)
+{
+	return MYSTRING_ERROR;
+}
+
 // ------------------------- unit-testing ------------------------------
 
 #ifndef NDEBUG
+
+// -------------------------- test-utils -------------------------------
 
 /**
  * @brief A procedure to help creating meaningful arrays with ease for testing purposes.
@@ -204,37 +313,267 @@ int myStringEqual(const MyString *str1, const MyString *str2)
  * @param new size for the array.
  * @return MYSTRING_SUCCESS if the array was initialized, MYSTRING_ERROR otherwise.
  */
-static MyString* testArrayAlloc(MyString *str, int c, size_t size) // fixme
+static MyString* testArrayAlloc(int c, size_t size)
 {
-	if (str == NULL)
-	{
-		str = myStringAlloc();
-	}
-	free(str->_array);
-	str->_array = NULL;
-	str->_array = charArrayAlloc(size);
-	memset(str->_array, c, size);
+	MyString *str = myStringAlloc();
+	reallocMyString(str, size);
+	memset(str->_array, c, size); // fixme SetFromMyString test#3 crash here.
 	str->_length = size;
 	return str;
 }
 
+/**
+ * @brief A simple string filter to test the MyStringFilter function.
+ * @param the character to filter.
+ * @return true if the character is filtered, false otherwise
+ */
+static bool filter(const char *c)
+{
+	if (*c == 'a')
+	{
+		return true;
+	}
+	return false;
+}
+
+// ----------------------- tester-functions ----------------------------
+
+void myStringAllocTester() // fixme
+{
+	// create a new empty myString.
+	MyString *newMyString = myStringAlloc(); // how to test this?
+
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringFreeTester() // fixme
+{
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringCloneTester()
+{
+	printf("Runing %s:\n", __func__);
+
+//	test #1: clone a not empty MyString
+	char * cString = "hi again";
+	MyString *str = myStringAlloc();
+	myStringSetFromCString(str, cString);
+	MyString *dest = myStringClone(str);
+	int got = 1;
+	if (!memcmp(str->_array, dest->_array, str->_length))
+	{
+		got = MYSTRING_SUCCESS;
+	}
+	int expected = MYSTRING_SUCCESS;
+
+	printf("expected %d, got %d.\n", expected, got);
+}
+
+void myStringSetFromMyStringTester()
+{
+	MyString *aString = myStringAlloc();
+	int retVal = 0;
+
+	// other == NULL should return ERROR
+	MyString *other = NULL;
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	// str == NULL should return ERROR. Can't change the pointer itself.
+	other = myStringAlloc();
+	myStringFree(aString);
+	aString = NULL; // todo note: have to null this after free, because it can't be done from
+	// inside a function. pass-by-value.
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	// set from identical size. should return SUCCESS
+	other = testArrayAlloc('b', 8);
+	aString = testArrayAlloc('t', 8);
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	// set from bigger/smaller list. should return SUCCESS
+	myStringFree(aString);
+	aString = myStringAlloc();
+	retVal = myStringSetFromMyString(aString, other);
+	printf("%d\n", retVal);
+
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringFilterTester()
+{
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringSetFromCStringTester()
+{
+	printf("Runing %s:\n", __func__);
+	puts("--------------------------------------\n");
+
+	MyString *str = myStringAlloc();
+	char *cString = "hi all";
+
+//	test #1: from a string fo length 6.
+	int expected1 = 0;
+	int got1 = myStringSetFromCString(str, cString);
+	puts("test #1");
+	printf("nexpected %d, got %d.\n\n",  expected1, got1);
+	myStringFree(str);
+	str = NULL;
+
+//	test #2: to a NULL MyString.
+	int expected2 = MYSTRING_ERROR;
+	int got2 = myStringSetFromCString(str, cString);
+	puts("test #2");
+	printf("nexpected %d, got %d.\n\n",  expected2, got2);
+
+//	test #3: from a NULL string.
+	str = myStringAlloc();
+	cString = NULL;
+	int expected3 = MYSTRING_ERROR;
+	int got3 = myStringSetFromCString(str, cString);
+	puts("test #3");
+	printf("nexpected %d, got %d.\n\n",  expected3, got3);
+
+	// todo add from empty string.
+}
+
+void myStringSetFromIntTester() // todo
+{
+	MyString *str = myStringAlloc();
+	int n = 0;
+	MyStringRetVal res = myStringSetFromInt(str, n);
+
+	int expected = 0;
+	int got = res;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+	myStringFree(str);
+}
+
+void myStringToIntTester() // todo
+{
+	MyString *str = myStringAlloc();
+
+	int expected = 0;
+	int got = myStringToInt(str);
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+	myStringFree(str);
+}
+
+void myStringToCStringTester() // todo
+{
+	MyString *str = myStringAlloc();
+	char *res = myStringToCString(str);
+	int got = 0;
+	if (res == "hi")
+		got = 1;
+	int expected = 0;
+
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+	myStringFree(str);
+}
+
+void myStringCatTester() // todo
+{
+	MyString *str = myStringAlloc();
+	MyString *dest = myStringAlloc();
+	myStringCat(dest, str);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringCatToTester() // todo
+{
+	MyString *str1 = myStringAlloc();
+	MyString *str2 = myStringAlloc();
+	MyString *res = myStringAlloc();
+	myStringCatTo(str1, str2, res);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringCompareTester() // todo
+{
+	MyString *str1 = myStringAlloc();
+	MyString *str2 = myStringAlloc();
+	myStringCompare(str1, str2);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringEqualTester() // todo
+{
+	MyString *str1 = myStringAlloc();
+	MyString *str2 = myStringAlloc();
+	myStringEqual(str1, str2);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringMemUsageTester() // todo
+{
+	MyString *str = myStringAlloc();
+	myStringMemUsage(str);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringStringLenTester() // todo
+{
+	MyString *str = myStringAlloc();
+	myStringLen(str);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
+void myStringWriteTester() // todo
+{
+	MyString *str = myStringAlloc();
+	FILE *testFile = fopen("","r"); // todo put file
+	myStringWrite(str, testFile);
+	int expected = 0;
+	int got = 0;
+	printf("Runing %s:\nexpected %d, got %d.\n", __func__, expected, got);
+}
+
 int main()
 {
-	/* MyString Alloc Test */
+	/* myStringAlloc Test */
+	myStringAllocTester();
 	// create a new empty myString.
 	MyString *newMyString = myStringAlloc(); // how to test this?
 
 	/* MyString Free Test */
+	myStringFreeTester();
 	// free an already created myString.
 	myStringFree(newMyString); // todo how to test if it works?
 	newMyString = NULL;
 
 	/* MyString Clone */
+	myStringCloneTester();
 	// clone myList. verify different array pointers.
 	MyString *aString = myStringAlloc();
 	MyString *bString = myStringClone(aString);
 
 	/* Set From MyString */
+	myStringSetFromMyStringTester();
 	int retVal = 0;
 	// other == NULL should return ERROR
 	MyString *other = NULL;
@@ -250,8 +589,8 @@ int main()
 	printf("%d\n", retVal);
 
 	// set from identical size. should return SUCCESS
-	testArrayAlloc(other, 'b', 8);
-	testArrayAlloc(aString, 't', 8);
+	other = testArrayAlloc('b', 8);
+	aString = testArrayAlloc('t', 8);
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
 
@@ -260,6 +599,44 @@ int main()
 	aString = myStringAlloc();
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
+
+	/* Filter */ // todo make a good tester
+	myStringFilterTester();
+	myStringFilter(aString, filter);
+
+	/* SetFromCString */ // todo make a good tester
+	myStringSetFromCStringTester();
+	myStringSetFromCString(aString, "hi all");
+
+	/* setFromInt */
+	myStringSetFromIntTester();
+
+	/* ToInt */
+	myStringToIntTester();
+
+	/* ToCString */
+	myStringToCStringTester();
+
+	/* CatTester */
+	myStringCatTester();
+
+	/* CatToTester */
+	myStringCatToTester();
+
+	/* Compare */
+	myStringCompareTester();
+
+	/* Equal */
+	myStringEqualTester();
+
+	/* MemUsage */
+	myStringMemUsageTester();
+
+	/* myStringLen */
+	myStringStringLenTester();
+
+	/* WriteTester */
+	myStringWriteTester();
 
 	/* mem games */
 	char *test = charArrayAlloc(4);
@@ -271,6 +648,11 @@ int main()
 	puts(pNewStr);
 	size_t a = 5;
 	size_t b = a;
+	printf("b: %li", b);
+
+	/* modulo */
+	printf("%d", 18%10);
+
 	return 0;
 }
 
