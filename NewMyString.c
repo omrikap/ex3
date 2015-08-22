@@ -64,13 +64,36 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 	return MYSTRING_SUCCESS; // if length >= size, do nothing
 }
 
-//static void genericRetValTest(unsigned int testNum, MyStringRetVal func)
-//{
-//	MyStringRetVal result = func;
-//	printf("   - test #%d: expected %d, got %d.\n",testNum , FAIL, result);
-//}
-
 // ------------------------------ functions -----------------------------
+
+MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *))
+{
+	if (str == NULL || filt == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	char *tmp = (char *) malloc(str->_length);
+	if (tmp == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	if (str->_length > 0)
+	{
+		int tmp_index = 0;
+		for (int i=0; i < str->_length; ++i)
+		{
+			if (!filt(&str->_array[i]))
+			{
+				tmp[tmp_index] = str->_array[i];
+				tmp_index++;
+			}
+		}
+		free(str->_array);
+		str->_array = tmp;
+		str->_length = (size_t) --tmp_index; // reduce last loop increment
+	}
+	return MYSTRING_SUCCESS;
+}
 
 MyString *myStringClone(const MyString *str)
 {
@@ -78,6 +101,10 @@ MyString *myStringClone(const MyString *str)
 	if (str != NULL)
 	{
 		pClonedString = myStringAlloc();
+		if (pClonedString == NULL)
+		{
+			return pClonedString;
+		}
 		reallocMyString(pClonedString, str->_length);
 		memcpy(pClonedString->_array, str->_array, str->_length);
 		pClonedString->_length = str->_length;
@@ -140,6 +167,22 @@ void myStringFree(MyString *str)
 
 #ifndef NDEBUG
 
+// -------------------------- test-utils -------------------------------
+
+/**
+ * @brief A simple string filter to test the MyStringFilter function.
+ * @param the character to filter.
+ * @return true if the character is filtered, false otherwise
+ */
+static bool filter(const char *c)
+{
+	if (*c == 'a')
+	{
+		return true;
+	}
+	return false;
+}
+
 // -------------------------- tester-functions --------------------------
 
 void reallocMyStringDriver()
@@ -155,34 +198,34 @@ void reallocMyStringDriver()
 	//	test #2: array is NULL - PASS
 	str = myStringAlloc(); // newString is declared in the previous test.
 
-	int got2 = reallocMyString(str, 5);
-	printf("   - test #2: expected %d, got %d.\n", PASS, got2);
+	got = reallocMyString(str, 5);
+	printf("   - test #2: expected %d, got %d.\n", PASS, got);
 	myStringFree(str);
 	str = NULL;
 
 	//	test #3: str._length < size - PASS
 	str = myStringAlloc();
 	myStringSetFromCString(str, "hey you");
-	int got3 = reallocMyString(str, 10);
-	printf("   - test #3: expected %d, got %d.\n", PASS, got3);
+	got = reallocMyString(str, 10);
+	printf("   - test #3: expected %d, got %d.\n", PASS, got);
 	myStringFree(str);
 
 	//	test #4: str._length == size - PASS
 	str = myStringAlloc();
 	myStringSetFromCString(str, "hey you");
-	int got4 = reallocMyString(str, 7);
-	printf("   - test #4: expected %d, got %d.\n", PASS, got4);
+	got = reallocMyString(str, 7);
+	printf("   - test #4: expected %d, got %d.\n", PASS, got);
 	myStringFree(str);
 
 	//	test #5: str._length > size - PASS
 	str = myStringAlloc();
 	myStringSetFromCString(str, "hey you");
-	int got5 = reallocMyString(str, 3);
-	printf("   - test #5: expected %d, got %d.\n\n", PASS, got5);
+	got = reallocMyString(str, 3);
+	printf("   - test #5: expected %d, got %d.\n\n", PASS, got);
 	myStringFree(str);
 }
 
-void myStringAllocFreeDriver() // todo change tester printing mechanism (expected, got).
+void myStringAllocFreeDriver()
 {
 	printf("++ Runing %s:\n", __func__);
 
@@ -214,15 +257,15 @@ void myStringSetFromCStringDriver()
 	//	test #2: cString is NULL
 	newMyString = myStringAlloc(); // newString is declared in the previous test.
 
-	int got2 = myStringSetFromCString(newMyString, NULL);
-	printf("   - test #2: expected %d, got %d.\n", FAIL, got2);
+	got = myStringSetFromCString(newMyString, NULL);
+	printf("   - test #2: expected %d, got %d.\n", FAIL, got);
 	myStringFree(newMyString);
 	newMyString = NULL;
 
 	//	test #3: cString is a well formatted C string
 	newMyString = myStringAlloc();
-	int got3 = myStringSetFromCString(newMyString, "hi all!");
-	printf("   - test #3: expected %d, got %d.\n\n", PASS, got3);
+	got = myStringSetFromCString(newMyString, "hi all!");
+	printf("   - test #3: expected %d, got %d.\n\n", PASS, got);
 	myStringFree(newMyString);
 }
 
@@ -243,8 +286,8 @@ void myStringSetFromMyStringDriver()
 	other = NULL;
 	str = myStringAlloc(); // newString is declared in the previous test.
 
-	int got2 = myStringSetFromMyString(str, other);
-	printf("   - test #2: expected %d, got %d.\n", FAIL, got2);
+	got = myStringSetFromMyString(str, other);
+	printf("   - test #2: expected %d, got %d.\n", FAIL, got);
 	myStringFree(str);
 	str = NULL;
 
@@ -252,8 +295,8 @@ void myStringSetFromMyStringDriver()
 	str = myStringAlloc();
 	other = myStringAlloc();
 	myStringSetFromCString(other, "test string");
-	int got3 = myStringSetFromMyString(str, other);
-	printf("   - test #3: expected %d, got %d.\n\n", PASS, got3);
+	got = myStringSetFromMyString(str, other);
+	printf("   - test #3: expected %d, got %d.\n\n", PASS, got);
 	myStringFree(str);
 	str = NULL;
 	myStringFree(other);
@@ -285,16 +328,53 @@ void myStringCloneDriver()
 	result = myStringAlloc();
 	result = myStringClone(str);
 
-	int got1 = FAIL;
+	got = FAIL;
 	if (result != NULL) // fixme. test with memcmp?
 	{
-		got1 = PASS;
+		got = PASS;
 	}
-	printf("   - test #2: expected %d, got %d.\n", PASS, got1);
+	printf("   - test #2: expected %d, got %d.\n\n", PASS, got);
 	myStringFree(str);
 	str = NULL;
 	myStringFree(result);
 	result = NULL;
+}
+
+void myStringFilterDriver()
+{
+	printf("++ Runing %s:\n", __func__);
+
+//	test #1: str is NULL - FAIL
+	MyString *str = NULL;
+
+	int got = myStringFilter(str, filter);
+	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
+
+//	test #2: flt is NULL - FAIL
+	str = myStringAlloc();
+	myStringSetFromCString(str, "atesat asatrianga");
+
+	got = myStringFilter(str, NULL);
+	printf("   - test #2: expected %d, got %d.\n", FAIL, got);
+	myStringFree(str);
+	str = NULL;
+
+//	test #3: str._arr is NULL - PASS
+	str = myStringAlloc();
+
+	got = myStringFilter(str, filter);
+	printf("   - test #3: expected %d, got %d.\n", PASS, got);
+	myStringFree(str);
+	str = NULL;
+
+//	test #4: str._arr is a string - PASS
+	str = myStringAlloc();
+	myStringSetFromCString(str, "atesat asatrianga");
+
+	got = myStringFilter(str, filter);
+	printf("   - test #4: expected %d, got %d.\n", PASS, got);
+	myStringFree(str);
+	str = NULL;
 }
 
 int main()
@@ -303,7 +383,8 @@ int main()
 //	myStringAllocFreeDriver();
 //	myStringSetFromCStringDriver();
 //	myStringSetFromMyStringDriver();
-	myStringCloneDriver();
+//	myStringCloneDriver();
+	myStringFilterDriver();
 
 	return 0;
 }
