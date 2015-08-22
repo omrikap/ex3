@@ -12,8 +12,8 @@ struct _MyString
 
 enum expected
 {
-	SUCCESS,
-	FAILURE = -1,
+	PASS,
+	FAIL = -1,
 };
 
 // --------------------------- My functions -----------------------------
@@ -54,6 +54,18 @@ static void reallocMyString(MyString *str, size_t size) // toTest
 }
 
 // ------------------------------ functions -----------------------------
+
+MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
+{
+	if (other == NULL || str == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
+	assert(&other->_length != NULL);
+	reallocMyString(str, other->_length);
+	memcpy(str->_array, other->_array, other->_length);
+	return MYSTRING_SUCCESS;
+}
 
 MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
 {
@@ -108,15 +120,15 @@ void myStringAllocFreeTester() // todo change tester printing mechanism (expecte
 	MyString *newMyString = NULL;
 	newMyString = myStringAlloc();
 
-	int got = SUCCESS;
+	int got = PASS;
 	if (newMyString == NULL)
 	{
-		got = FAILURE;
+		got = FAIL;
 	}
 	myStringFree(newMyString);
 	newMyString = NULL;
 
-	printf("   - test #1: expected %d, got %d.\n", SUCCESS, got);
+	printf("   - test #1: expected %d, got %d.\n\n", PASS, got);
 }
 
 void myStringSetFromCStringTester()
@@ -127,21 +139,48 @@ void myStringSetFromCStringTester()
 	MyString *newMyString = NULL;
 
 	int got = myStringSetFromCString(newMyString, "hi all!");
-	printf("   - test #1: expected %d, got %d.\n", FAILURE, got);
+	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
 
 	//	test #2: cString is NULL
 	newMyString = myStringAlloc(); // newString is declared in the previous test.
 
 	int got2 = myStringSetFromCString(newMyString, NULL);
-	printf("   - test #2: expected %d, got %d.\n", FAILURE, got2);
+	printf("   - test #2: expected %d, got %d.\n", FAIL, got2);
 	myStringFree(newMyString);
 	newMyString = NULL;
 
 	//	test #3: cString is a well formatted C string
 	newMyString = myStringAlloc();
 	int got3 = myStringSetFromCString(newMyString, "hi all!");
-	printf("   - test #2: expected %d, got %d.\n", SUCCESS, got3);
+	printf("   - test #3: expected %d, got %d.\n\n", PASS, got3);
 	myStringFree(newMyString);
+}
+
+void myStringSetFromMyStringTester()
+{
+	printf("++ Runing %s:\n", __func__);
+
+	//	test #1: str is NULL - FAIL // todo
+	MyString *str = NULL;
+	MyString *other = myStringAlloc();
+	myStringSetFromCString(other, "test string");
+
+	int got = myStringSetFromMyString(str, other);
+	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
+
+	//	test #2: other is NULL - FAIL // todo
+	str = myStringAlloc(); // newString is declared in the previous test.
+
+	int got2 = myStringSetFromMyString(str, other);
+	printf("   - test #2: expected %d, got %d.\n", FAIL, got2);
+	myStringFree(str);
+	str = NULL;
+
+	//	test #3: str and other are well defined - PASS // todo
+	str = myStringAlloc();
+	int got3 = myStringSetFromMyString(str, other);
+	printf("   - test #3: expected %d, got %d.\n\n", PASS, got3);
+	myStringFree(str);
 }
 
 int main()
