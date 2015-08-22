@@ -155,7 +155,6 @@ MyStringRetVal myStringSetFromCString(MyString *str, const char *cString) // toT
 	size_t i = 0;
 	while (*cString++)
 	{
-//		*cString++;
 		i++;
 	}
 	str->_length = i;
@@ -222,13 +221,17 @@ MyStringRetVal myStringSetFromInt(MyString *str, int n) // toTest
 	return MYSTRING_SUCCESS;
 }
 
-int myStringToInt(const MyString *str) // toTest
+int myStringToInt(const MyString *str) // toTest fixme
 {
 	// todo verify the string containing int content.
 	int result = 0;
 	bool negative = false;
 	int i = 0;
-	if (str->_array[0] == '-')
+	if (str->_array == NULL)
+	{
+		return result;
+	}
+	if (str->_array[0] == '-') // fixme verify not null
 	{
 		negative = true;
 		i = 1;
@@ -245,11 +248,11 @@ int myStringToInt(const MyString *str) // toTest
 	return result;
 }
 
-char *myStringToCString(const MyString *str) // toTest
+char *myStringToCString(const MyString *str) // toTest fixme
 {
 	MyString *newString = myStringClone(str);
 	reallocMyString(newString, str->_length + 1);
-	str->_array[str->_length-1] = '\0';
+	str->_array[str->_length-1] = '\0'; // fixme. crashes myStringFromInt. SEGMENTATION.
 	return str->_array;
 }
 
@@ -305,22 +308,6 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream)
 #ifndef NDEBUG
 
 // -------------------------- test-utils -------------------------------
-
-/**
- * @brief A procedure to help creating meaningful arrays with ease for testing purposes.
- * @param a pointer to MyString type.
- * @param a character to fill the array with.
- * @param new size for the array.
- * @return MYSTRING_SUCCESS if the array was initialized, MYSTRING_ERROR otherwise.
- */
-static MyString* testArrayAlloc(int c, size_t size)
-{
-	MyString *str = myStringAlloc();
-	reallocMyString(str, size);
-	memset(str->_array, c, size); // fixme SetFromMyString test#3 crash here.
-	str->_length = size;
-	return str;
-}
 
 /**
  * @brief A simple string filter to test the MyStringFilter function.
@@ -393,8 +380,9 @@ void myStringSetFromMyStringTester()
 	printf("%d\n", retVal);
 
 	// set from identical size. should return SUCCESS
-	other = testArrayAlloc('b', 8);
-	aString = testArrayAlloc('t', 8);
+	myStringSetFromCString(other, "hey you");
+	aString = myStringAlloc();
+	myStringSetFromCString(aString, "hey joe");
 	retVal = myStringSetFromMyString(aString, other);
 	printf("%d\n", retVal);
 
@@ -574,31 +562,31 @@ int main()
 
 	/* Set From MyString */
 	myStringSetFromMyStringTester();
-	int retVal = 0;
-	// other == NULL should return ERROR
-	MyString *other = NULL;
-	retVal = myStringSetFromMyString(aString, other);
-	printf("%d\n", retVal);
-
-	// str == NULL should return ERROR. Can't change the pointer itself.
-	other = myStringAlloc();
-	myStringFree(aString);
-	aString = NULL; // todo note: have to null this after free, because it can't be done from
-	// inside a function. pass-by-value.
-	retVal = myStringSetFromMyString(aString, other);
-	printf("%d\n", retVal);
-
-	// set from identical size. should return SUCCESS
-	other = testArrayAlloc('b', 8);
-	aString = testArrayAlloc('t', 8);
-	retVal = myStringSetFromMyString(aString, other);
-	printf("%d\n", retVal);
-
-	// set from bigger/smaller list. should return SUCCESS
-	myStringFree(aString);
-	aString = myStringAlloc();
-	retVal = myStringSetFromMyString(aString, other);
-	printf("%d\n", retVal);
+//	int retVal = 0;
+//	// other == NULL should return ERROR
+//	MyString *other = NULL;
+//	retVal = myStringSetFromMyString(aString, other);
+//	printf("%d\n", retVal);
+//
+//	// str == NULL should return ERROR. Can't change the pointer itself.
+//	other = myStringAlloc();
+//	myStringFree(aString);
+//	aString = NULL; // todo note: have to null this after free, because it can't be done from
+//	// inside a function. pass-by-value.
+//	retVal = myStringSetFromMyString(aString, other);
+//	printf("%d\n", retVal);
+//
+//	// set from identical size. should return SUCCESS
+//	other = testArrayAlloc('b', 8);
+//	aString = testArrayAlloc('t', 8);
+//	retVal = myStringSetFromMyString(aString, other);
+//	printf("%d\n", retVal);
+//
+//	// set from bigger/smaller list. should return SUCCESS
+//	myStringFree(aString);
+//	aString = myStringAlloc();
+//	retVal = myStringSetFromMyString(aString, other);
+//	printf("%d\n", retVal);
 
 	/* Filter */ // todo make a good tester
 	myStringFilterTester();
