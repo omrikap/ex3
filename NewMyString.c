@@ -37,23 +37,53 @@ static char *charArrayAlloc(long arraySize)
  * @param str the string to change it's length.
  * @param size the new size.
  */
-static void reallocMyString(MyString *str, size_t size) // toTest
+static MyStringRetVal reallocMyString(MyString *str, size_t size)
 {
+	if (str == NULL)
+	{
+		return MYSTRING_ERROR;
+	}
 	if (str->_array == NULL)
 	{
 		str->_array = (char *) malloc(size);
-	}
-	else if (str->_length >= size)
-	{
-		return;
+		if (str->_array != NULL)
+		{
+			str->_length = size;
+		}
+		else
+		{
+			return MYSTRING_ERROR;
+		}
 	}
 	else if (str->_length < size)
 	{
 		realloc(str->_array, size);
+		str->_length = size;
 	}
+	assert(str->_length >= size);
+	return MYSTRING_SUCCESS; // if length >= size, do nothing
 }
 
+//static void genericRetValTest(unsigned int testNum, MyStringRetVal func)
+//{
+//	MyStringRetVal result = func;
+//	printf("   - test #%d: expected %d, got %d.\n",testNum , FAIL, result);
+//}
+
 // ------------------------------ functions -----------------------------
+
+MyString *myStringClone(const MyString *str)
+{
+	MyString *pClonedString = NULL;
+	if (str != NULL)
+	{
+		pClonedString = myStringAlloc();
+		reallocMyString(pClonedString, str->_length);
+		memcpy(pClonedString->_array, str->_array, str->_length);
+		pClonedString->_length = str->_length;
+	}
+	return pClonedString;
+}
 
 MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
 {
@@ -112,7 +142,47 @@ void myStringFree(MyString *str)
 
 // -------------------------- tester-functions --------------------------
 
-void myStringAllocFreeTester() // todo change tester printing mechanism (expected, got).
+void reallocMyStringDriver()
+{
+	printf("++ Runing %s:\n", __func__);
+
+	//	test #1: str is NULL - FAIL
+	MyString *str = NULL;
+
+	int got = reallocMyString(str, 5);
+	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
+
+	//	test #2: array is NULL - PASS
+	str = myStringAlloc(); // newString is declared in the previous test.
+
+	int got2 = reallocMyString(str, 5);
+	printf("   - test #2: expected %d, got %d.\n", PASS, got2);
+	myStringFree(str);
+	str = NULL;
+
+	//	test #3: str._length < size - PASS
+	str = myStringAlloc();
+	myStringSetFromCString(str, "hey you");
+	int got3 = reallocMyString(str, 10);
+	printf("   - test #3: expected %d, got %d.\n", PASS, got3);
+	myStringFree(str);
+
+	//	test #4: str._length == size - PASS
+	str = myStringAlloc();
+	myStringSetFromCString(str, "hey you");
+	int got4 = reallocMyString(str, 7);
+	printf("   - test #4: expected %d, got %d.\n", PASS, got4);
+	myStringFree(str);
+
+	//	test #5: str._length > size - PASS
+	str = myStringAlloc();
+	myStringSetFromCString(str, "hey you");
+	int got5 = reallocMyString(str, 3);
+	printf("   - test #5: expected %d, got %d.\n\n", PASS, got5);
+	myStringFree(str);
+}
+
+void myStringAllocFreeDriver() // todo change tester printing mechanism (expected, got).
 {
 	printf("++ Runing %s:\n", __func__);
 
@@ -131,7 +201,7 @@ void myStringAllocFreeTester() // todo change tester printing mechanism (expecte
 	printf("   - test #1: expected %d, got %d.\n\n", PASS, got);
 }
 
-void myStringSetFromCStringTester()
+void myStringSetFromCStringDriver()
 {
 	printf("++ Runing %s:\n", __func__);
 
@@ -156,11 +226,11 @@ void myStringSetFromCStringTester()
 	myStringFree(newMyString);
 }
 
-void myStringSetFromMyStringTester()
+void myStringSetFromMyStringDriver()
 {
 	printf("++ Runing %s:\n", __func__);
 
-	//	test #1: str is NULL - FAIL // todo
+	//	test #1: str is NULL - FAIL
 	MyString *str = NULL;
 	MyString *other = myStringAlloc();
 	myStringSetFromCString(other, "test string");
@@ -168,7 +238,9 @@ void myStringSetFromMyStringTester()
 	int got = myStringSetFromMyString(str, other);
 	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
 
-	//	test #2: other is NULL - FAIL // todo
+	//	test #2: other is NULL - FAIL
+	myStringFree(other);
+	other = NULL;
 	str = myStringAlloc(); // newString is declared in the previous test.
 
 	int got2 = myStringSetFromMyString(str, other);
@@ -176,17 +248,62 @@ void myStringSetFromMyStringTester()
 	myStringFree(str);
 	str = NULL;
 
-	//	test #3: str and other are well defined - PASS // todo
+	//	test #3: str and other are well defined - PASS
 	str = myStringAlloc();
+	other = myStringAlloc();
+	myStringSetFromCString(other, "test string");
 	int got3 = myStringSetFromMyString(str, other);
 	printf("   - test #3: expected %d, got %d.\n\n", PASS, got3);
 	myStringFree(str);
+	str = NULL;
+	myStringFree(other);
+	other = NULL;
+}
+
+void myStringCloneDriver()
+{
+	printf("++ Runing %s:\n", __func__);
+
+//	test #1: str is NULL - PASS
+	MyString *str = NULL;
+	MyString *result = myStringClone(str);
+
+	int got = FAIL;
+	if (result == NULL)
+	{
+		got = PASS;
+	}
+	printf("   - test #1: expected %d, got %d.\n", PASS, got);
+	myStringFree(str);
+	str = NULL;
+	myStringFree(result);
+	result = NULL;
+
+// 	test #2: str is a legal MyString - PASS
+	str = myStringAlloc();
+	myStringSetFromCString(str, "cloning");
+	result = myStringAlloc();
+	result = myStringClone(str);
+
+	int got1 = FAIL;
+	if (result != NULL) // fixme. test with memcmp?
+	{
+		got1 = PASS;
+	}
+	printf("   - test #2: expected %d, got %d.\n", PASS, got1);
+	myStringFree(str);
+	str = NULL;
+	myStringFree(result);
+	result = NULL;
 }
 
 int main()
 {
-	myStringAllocFreeTester();
-	myStringSetFromCStringTester();
+//	reallocMyStringDriver();
+//	myStringAllocFreeDriver();
+//	myStringSetFromCStringDriver();
+//	myStringSetFromMyStringDriver();
+	myStringCloneDriver();
 
 	return 0;
 }
