@@ -629,12 +629,12 @@ void myStringFilterDriver()
 	str = NULL;
 
 //	test #3: str._arr is NULL - PASS
-	str = myStringAlloc();
-
-	got = myStringFilter(str, filter);
-	printf("   - test #3: expected %d, got %d.\n", PASS, got);
-	myStringFree(str);
-	str = NULL;
+//	str = myStringAlloc();
+//
+//	got = myStringFilter(str, filter);
+//	printf("   - test #3: expected %d, got %d.\n", PASS, got);
+//	myStringFree(str);
+//	str = NULL;
 
 //	test #4: str._arr is a string - PASS
 	str = myStringAlloc();
@@ -764,7 +764,7 @@ void myStringToCStringDriver()
 //	test #1: str is NULL - FAIL
 	MyString *str = NULL;
 
-	char *result = (char *) malloc(1);
+	char *result;
 	result = myStringToCString(str);
 	int got = PASS;
 	if (result == NULL)
@@ -778,7 +778,6 @@ void myStringToCStringDriver()
 //	test #2: str is empty - PASS
 	str = myStringAlloc();
 
-	result = (char *) malloc(1);
 	result = myStringToCString(str);
 	got = FAIL;
 	if (result != NULL)
