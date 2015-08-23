@@ -316,7 +316,7 @@ MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyStrin
 		return MYSTRING_ERROR;
 	}
 	memcpy(result->_array, str1->_array, str1->_length);
-	memcpy(result->_array + str1->_length + 1, str2->_array, str2->_length);
+	memcpy(result->_array + str1->_length, str2->_array, str2->_length);
 	result->_length = str1->_length + str2->_length;
 	return MYSTRING_SUCCESS;
 }
@@ -1015,7 +1015,7 @@ int main()
 //	myStringFilterDriver();
 //	myStringLenDriver();
 //	myStringCatDriver();
-//	myStringCatToDriver();
+	myStringCatToDriver();
 //	myStringToCStringDriver();
 //	myStringSetFromIntDriver();
 //	myStringToIntDriver();
