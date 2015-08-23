@@ -322,8 +322,10 @@ MyStringRetVal myStringSetFromInt(MyString *str, int n)
 		n = reduceModulo(n);
 		intLength--;
 	}
-	if ((negative))
+	if (negative)
+	{
 		str->_array[0] = '-';
+	}
 	return MYSTRING_SUCCESS;
 }
 
@@ -481,8 +483,10 @@ MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
 
 	const char *head = cString;
 	size_t i = 0;
-	while ((*cString++))
+	while (*cString++)
+	{
 		i++;
+	}
 	assert(i != 0);
 	reallocMyString(str, i);
 	memcpy(str->_array, head, i);
