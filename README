@@ -1,0 +1,10 @@
+README
+======
+
+1. The cons of declaring the struct that way in the .h file are:
+ - implementation is revealed
+ - we might cause linkage errors if we won't remember to put #ifdef
+
+2. The compiler will use a pointer to the struct to solve the problem of missing implementation
+   untill the Linker will find the implementation of the unresolved reference. It can allocate
+   the right size of memory because all pointers are from a constant size.

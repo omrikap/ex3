@@ -1,8 +1,22 @@
 #include <assert.h>
 #include "MyString.h"
-#define MAX_INPUT_SIZE 500
-
+/********************************************************************************
+ * @file MyStringMain.c
+ * @author  omri.kaplan
+ *
+ * @date 23 Aug 2015
+ *
+ * @brief A little program to compare strings.
+ *
+ * @section LICENSE
+ * This program is not a free software;
+ *
+ * @section DESCRIPTION
+ * This program is able to tell if two strings are different from each other, and
+ * to order them lexicographically.
+ ********************************************************************************/
 #ifdef NDEBUG
+#define MAX_INPUT_SIZE 500
 
 int main()
 {
@@ -20,16 +34,15 @@ int main()
 	MyString *strB = myStringAlloc();
 	myStringSetFromCString(strB, cStrB);
 
-	// todo assert input?
 	FILE *stream = fopen("test.out", "w");
 
 	if (myStringCompare(strA, strB) > 0)
 	{
-		fprintf(stream, "%s is greater than %s", cStrA, cStrB);
+		fprintf(stream, "%s is greater than %s\n", cStrA, cStrB);
 	}
 	else
 	{
-		fprintf(stream, "%s is greater than %s", cStrB, cStrA);
+		fprintf(stream, "%s is greater than %s\n", cStrB, cStrA);
 	}
 
 	fclose(stream);

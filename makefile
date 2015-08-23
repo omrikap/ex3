@@ -13,10 +13,12 @@ libmyString.a: MyString.c MyString.h
 #make tests
 tests: MyString.o
 	$(CC) $(FLAGS) MyString.c -o MyStringTests
+	MyStringTests
 
 #make main
 MyStringMain: MyStringMain.o MyString.o libmyString.a
 	$(CC) $(FLAGS) -D NDEBUG MyStringMain.c -L. -lmyString -o MyStringMain
+	MyStringMain
 
 #make clean
 clean:

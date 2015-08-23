@@ -1,6 +1,32 @@
 #include <assert.h>
 #include <string.h>
 #include "MyString.h"
+/********************************************************************************
+ * @file MyString.c
+ * @author  omri.kaplan
+ *
+ * @date 23 Aug 2015
+ *
+ * @brief The SLabC Standard Strings library.
+ *
+ * @section LICENSE
+ * This program is not a free software;
+ *
+ * @section DESCRIPTION
+ * The SLabC Standard Strings library.
+ *
+ * This library provides a string type with extra capabilities.
+ *
+ * The library provides the following features:
+ *  - basic string operations
+ *  - conversion to other types (ints, C strings)
+ *
+ * Error handling
+ * ~~~~~~~~~~~~~~
+ * Most functions may fail due to failure to allocate dynamic memory. When
+ * this happens the functions will return an appropriate failure value. If this
+ * happens, then the state of the other outputs of the function is undefined.
+ ********************************************************************************/
 
 // -------------------------- const definitions -------------------------
 
@@ -103,7 +129,7 @@ int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(c
 		return MYSTR_ERROR_CODE;
 	}
 	return cmp(str1, str2);
-} // toTest
+}
 
 int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
 																				 const MyString*))
@@ -113,7 +139,7 @@ int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)
 		return MYSTR_ERROR_CODE;
 	}
 	return cmp(str1, str2);
-} // toTest
+}
 
 void myStringCoustomSort(MyString *arr, size_t len, int	(*cmp)(const void *, const void *))
 {
@@ -122,9 +148,9 @@ void myStringCoustomSort(MyString *arr, size_t len, int	(*cmp)(const void *, con
 		return;
 	}
 	qsort(arr, len, sizeof(MyString), cmp);
-} // toTest
+}
 
-void myStringSort(MyString *arr, size_t len) // toTest
+void myStringSort(MyString *arr, size_t len)
 {
 	if (arr == NULL)
 	{
@@ -133,7 +159,7 @@ void myStringSort(MyString *arr, size_t len) // toTest
 	qsort(arr, len, sizeof(MyString), voidAdapterCompare);
 }
 
-MyStringRetVal myStringWrite(const MyString *str, FILE *stream) // toTest
+MyStringRetVal myStringWrite(const MyString *str, FILE *stream)
 {
 	if (str == NULL || stream == NULL)
 	{
@@ -152,12 +178,12 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream) // toTest
 	return MYSTRING_ERROR;
 }
 
-unsigned long myStringMemUsage(const MyString *str1) // toTest
+unsigned long myStringMemUsage(const MyString *str1)
 {
 	return sizeof(MyString) + str1->_length * sizeof(char);
 }
 
-int myStringEqual(const MyString *str1, const MyString *str2) // toTest
+int myStringEqual(const MyString *str1, const MyString *str2)
 {
 	if (str1 == NULL || str2 == NULL)
 	{
@@ -206,7 +232,6 @@ int myStringCompare(const MyString *str1, const MyString *str2)
 
 int myStringToInt(const MyString *str)
 {
-	// todo verify the string containing int content. how?
 	if (str == NULL)
 	{
 		return MYSTR_ERROR_CODE;
@@ -286,7 +311,7 @@ char *myStringToCString(const MyString *str)
 	return cString->_array;
 }
 
-MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result)//toTest
+MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result)
 {
 	if (str1 == NULL || str2 == NULL || result == NULL)
 	{
@@ -908,8 +933,6 @@ void myStringCompareDriver()
 	str1 = NULL;
 	myStringFree(str2);
 	str2 = NULL;
-
-	// todo more tests
 }
 
 int main()
