@@ -161,6 +161,7 @@ char * myStringToCString(const MyString *str);
  */
 MyStringRetVal myStringCat(MyString * dest, const MyString * src);
 
+
 /**
  * @brief Sets result to be the concatenation of str1 and str2.
  * 	result should be initially allocated by the caller.
@@ -172,6 +173,7 @@ MyStringRetVal myStringCat(MyString * dest, const MyString * src);
  *  @return MYSTRING_SUCCESS on success, MYSTRING_ERROR on failure.
  */
 MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result);
+
 
 /**
  * @brief Compare str1 and str2.
@@ -200,9 +202,7 @@ int myStringCompare(const MyString *str1, const MyString *str2);
  * 	And a value less than zero indicates the opposite.
  * 	If strings cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
-
- //TODO insert myStringCustomCompare signature here
- 
+int myStringCustomCompare(const MyString *str1, const MyString *str2, void (*cmp)());
 
 
 /**
@@ -218,6 +218,7 @@ int myStringCompare(const MyString *str1, const MyString *str2);
   */
 int myStringEqual(const MyString *str1, const MyString *str2);
 
+
 /**
  * @brief Check if str1 is equal to str2.
  * @param str1
@@ -230,18 +231,20 @@ int myStringEqual(const MyString *str1, const MyString *str2);
  * 	A greater than zero value indicates that the strings are equal.
  * 	If string cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
-//TODO insert myStringCustomEqual signature here
- 
+ int myStringCustomEqual(const MyString *str1, const MyString *str2, void (*cmp)());
+
 
 /**
  * @return the amount of memory (all the memory that used by the MyString object itself and its allocations), in bytes, allocated to str1.
  */
 unsigned long myStringMemUsage(const MyString *str1);
 
+
 /**
  * @return the length of the string in str1.
  */
 unsigned long myStringLen(const MyString *str1);
+
 
 /**
  * Writes the content of str to stream. (like fputs())
@@ -251,6 +254,7 @@ unsigned long myStringLen(const MyString *str1);
  */
 MyStringRetVal myStringWrite(const MyString *str, FILE *stream);
 
+
 /**
  * @brief sort an array of MyString pointers
  * @param arr
@@ -259,8 +263,9 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream);
  * 
  * RETURN VALUE:none
   */
-//TODO insert myStringCoustomSort signature here
- 
+void myStringCoustomSort(MyString *arr, size_t len, void (*cmp)(MyString*, MyString*));
+
+
 /**
  * @brief sorts an array of MyString pointers according to the default comparison (like in myStringCompare)
  * @param arr
@@ -268,8 +273,8 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream);
  *
  * RETURN VALUE: none
   */
-//TODO insert myStringSort signature here
- 
+void myStringSort(MyString *arr, size_t len);
+
 
 #endif // _MYSTRING_H
 
