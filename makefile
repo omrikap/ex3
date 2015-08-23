@@ -1,15 +1,23 @@
-// fixme
-#make myString
+CC = c99
+FLAGS = -Wall -Wvla -Wextra
+
+.PHONY: clean
+.PHONY: tests
+.PHONY: main
+
+#make myStringLib
 libmyString.a: MyString.c MyString.h
+	$(CC) -c -D NDEBUG $(FLAGS) MyString.c -o MyString.o
+	ar rcs libmyString.a MyString.o
 
 #make tests
 tests: MyString.o
-	c99 -Wall -Wvla -Wextra MyString.c
+	$(CC) $(FLAGS) MyString.c -o MyStringTests
 
 #make main
 MyStringMain: MyStringMain.o MyString.o
-	c99 -Wall -Wvla -Wextra MyString.o MyStringMain.o
+	$(CC) $(FLAGS) MyStringMain.o -L. -lmyString -o MyStringMain
 
 #make clean
-clean // fixme
-	rm MyString.o MyStringMain.o libmyString.a tests MyStringMain
+clean:
+	rm -f *.o *.out libmyString.a MyStringMain MyStringTests

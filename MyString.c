@@ -590,23 +590,6 @@ void myStringCloneDriver()
 	str = NULL;
 	myStringFree(result);
 	result = NULL;
-
-// 	test #2: str is a legal MyString - PASS // todo remove
-//	str = myStringAlloc();
-//	myStringSetFromCString(str, "cloning");
-//	result = myStringAlloc();
-//	result = myStringClone(str);
-//
-//	got = FAIL;
-//	if (result != NULL) // fixme. test with memcmp?
-//	{
-//		got = PASS;
-//	}
-//	printf("   - test #2: expected %d, got %d.\n\n", PASS, got);
-//	myStringFree(str);
-//	str = NULL;
-//	myStringFree(result);
-//	result = NULL;
 }
 
 void myStringFilterDriver()
@@ -774,38 +757,6 @@ void myStringToCStringDriver()
 	printf("   - test #1: expected %d, got %d.\n", FAIL, got);
 	free(result);
 	result = NULL;
-
-//	test #2: str is empty - PASS // todo remove
-//	str = myStringAlloc();
-//
-//	result = myStringToCString(str);
-//	got = FAIL;
-//	if (result != NULL)
-//	{
-//		got = PASS;
-//	}
-//	printf("   - test #2: expected %d, got %d.\n", PASS, got);
-//	free(result);
-//	result = NULL;
-//	myStringFree(str);
-//	str = NULL;
-
-//	test #3: str is contains a meaningful string - PASS // todo remove
-//	str = myStringAlloc();
-//	myStringSetFromCString(str, "great fun");
-//
-//	result = (char *) malloc(str->_length + 1);
-//	result = myStringToCString(str);
-//	got = FAIL;
-//	if (result != NULL)
-//	{
-//		got = PASS;
-//	}
-//	printf("   - test #3: expected %d, got %d.\n", PASS, got);
-//	free(result);
-//	result = NULL;
-//	myStringFree(str);
-//	str = NULL;
 }
 
 void myStringSetFromIntDriver()
