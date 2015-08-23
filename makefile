@@ -16,7 +16,7 @@ tests: MyString.o
 
 #make main
 MyStringMain: MyStringMain.o MyString.o libmyString.a
-	$(CC) $(FLAGS) MyStringMain.o -L. -lmyString -o MyStringMain
+	$(CC) $(FLAGS) MyStringMain.c -L. -lmyString -o MyStringMain
 
 #make clean
 clean:
