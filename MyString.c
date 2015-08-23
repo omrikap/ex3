@@ -1007,19 +1007,19 @@ void myStringCompareDriver()
 
 int main()
 {
-	reallocMyStringDriver();
-	myStringAllocFreeDriver();
-	myStringSetFromCStringDriver();
-	myStringSetFromMyStringDriver();
-	myStringCloneDriver();
-	myStringFilterDriver();
-	myStringLenDriver();
-	myStringCatDriver();
-	myStringCatToDriver();
-	myStringToCStringDriver();
-	myStringSetFromIntDriver();
-	myStringToIntDriver();
-	myStringCompareDriver();
+//	reallocMyStringDriver();
+//	myStringAllocFreeDriver();
+//	myStringSetFromCStringDriver();
+//	myStringSetFromMyStringDriver();
+//	myStringCloneDriver();
+//	myStringFilterDriver();
+//	myStringLenDriver();
+//	myStringCatDriver();
+//	myStringCatToDriver();
+//	myStringToCStringDriver();
+//	myStringSetFromIntDriver();
+//	myStringToIntDriver();
+//	myStringCompareDriver();
 
 	return 0;
 }
