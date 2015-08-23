@@ -50,7 +50,7 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 		{
 			return MYSTRING_ERROR;
 		}
-//		str->_array = reallocArr;
+		str->_array = reallocArr;
 	}
 	str->_length = size;
 	return MYSTRING_SUCCESS;
