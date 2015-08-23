@@ -62,8 +62,6 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 				return MYSTRING_ERROR;
 			}
 			str->_array = reallocArr;
-			free(reallocArr);
-			reallocArr = NULL;
 		}
 	}
 	str->_length = size; // if length >= size, just change length
