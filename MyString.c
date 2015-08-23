@@ -47,6 +47,7 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 	{
 		if (str->_array == NULL)
 		{
+			free(str->_array);
 			str->_array = (char *) malloc(size);
 			if (str->_array == NULL)
 			{
