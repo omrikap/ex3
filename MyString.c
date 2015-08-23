@@ -121,6 +121,9 @@ static int voidAdapterCompare(const void *str1, const void *str2)
 
 // ------------------------------ functions -----------------------------
 
+/**
+ * O(n)
+ */
 int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
 																			   const MyString*))
 {
@@ -131,6 +134,9 @@ int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(c
 	return cmp(str1, str2);
 }
 
+/**
+ * O(n)
+ */
 int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
 																				 const MyString*))
 {
@@ -141,6 +147,9 @@ int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)
 	return cmp(str1, str2);
 }
 
+/**
+ * O(n)
+ */
 void myStringCoustomSort(MyString *arr, size_t len, int	(*cmp)(const void *, const void *))
 {
 	if (arr == NULL || cmp == NULL)
@@ -150,6 +159,9 @@ void myStringCoustomSort(MyString *arr, size_t len, int	(*cmp)(const void *, con
 	qsort(arr, len, sizeof(MyString), cmp);
 }
 
+/**
+ * O(n)
+ */
 void myStringSort(MyString *arr, size_t len)
 {
 	if (arr == NULL)
@@ -159,6 +171,9 @@ void myStringSort(MyString *arr, size_t len)
 	qsort(arr, len, sizeof(MyString), voidAdapterCompare);
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringWrite(const MyString *str, FILE *stream)
 {
 	if (str == NULL || stream == NULL)
@@ -178,11 +193,17 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream)
 	return MYSTRING_ERROR;
 }
 
+/**
+ * O(1)
+ */
 unsigned long myStringMemUsage(const MyString *str1)
 {
 	return sizeof(MyString) + str1->_length * sizeof(char);
 }
 
+/**
+ * O(n)
+ */
 int myStringEqual(const MyString *str1, const MyString *str2)
 {
 	if (str1 == NULL || str2 == NULL)
@@ -205,6 +226,9 @@ int myStringEqual(const MyString *str1, const MyString *str2)
 	return result;
 }
 
+/**
+ * O(n)
+ */
 int myStringCompare(const MyString *str1, const MyString *str2)
 {
 	if (str1 == NULL || str2 == NULL)
@@ -230,6 +254,9 @@ int myStringCompare(const MyString *str1, const MyString *str2)
 	return (int) (str1->_length - str2->_length);
 }
 
+/**
+ * O(n)
+ */
 int myStringToInt(const MyString *str)
 {
 	if (str == NULL)
@@ -260,6 +287,9 @@ int myStringToInt(const MyString *str)
 	return result;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringSetFromInt(MyString *str, int n)
 {
 	if (str == NULL)
@@ -294,6 +324,9 @@ MyStringRetVal myStringSetFromInt(MyString *str, int n)
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(n)
+ */
 char *myStringToCString(const MyString *str)
 {
 	if (str == NULL)
@@ -311,6 +344,9 @@ char *myStringToCString(const MyString *str)
 	return cString->_array;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result)
 {
 	if (str1 == NULL || str2 == NULL || result == NULL)
@@ -332,6 +368,9 @@ MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyStrin
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringCat(MyString *dest, const MyString *src)
 {
 	if (dest == NULL || src == NULL)
@@ -348,6 +387,9 @@ MyStringRetVal myStringCat(MyString *dest, const MyString *src)
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(1)
+ */
 unsigned long myStringLen(const MyString *str1)
 {
 	if (str1 == NULL)
@@ -357,6 +399,9 @@ unsigned long myStringLen(const MyString *str1)
 	return str1->_length;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *))
 {
 	if (str == NULL || filt == NULL)
@@ -386,6 +431,9 @@ MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *))
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(n)
+ */
 MyString *myStringClone(const MyString *str)
 {
 	MyString *pClonedString = NULL;
@@ -403,6 +451,9 @@ MyString *myStringClone(const MyString *str)
 	return pClonedString;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
 {
 	if (other == NULL || str == NULL)
@@ -415,6 +466,9 @@ MyStringRetVal myStringSetFromMyString(MyString *str, const MyString *other)
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(n)
+ */
 MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
 {
 	if (str == NULL || cString == NULL)
@@ -433,6 +487,9 @@ MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
 	return MYSTRING_SUCCESS;
 }
 
+/**
+ * O(n)
+ */
 MyString *myStringAlloc()
 {
 	MyString *pNewString = (MyString *) malloc(sizeof(MyString));
@@ -444,6 +501,9 @@ MyString *myStringAlloc()
 	return pNewString;
 }
 
+/**
+ * O(1)
+ */
 void myStringFree(MyString *str)
 {
 	if (str != NULL)
