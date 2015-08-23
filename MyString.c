@@ -698,44 +698,18 @@ void myStringCatDriver()
 	myStringFree(dest);
 	dest = NULL;
 
-//	test #3: dest._arr is NULL - PASS
-//	dest = myStringAlloc();
-//	assert(dest->_array == NULL);
-//	src = myStringAlloc();
-//	myStringSetFromCString(src, "testing");
-//
-//	got = myStringCat(dest, src);
-//	printf("   - test #3: expected %d, got %d.\n", PASS, got);
-//	myStringFree(dest);
-//	dest = NULL;
-//	myStringFree(src);
-//	src = NULL;
-
-//	test #4: src._arr is NULL - PASS
+//	test #3: src._arr is NULL - PASS
 	dest = myStringAlloc();
 	myStringSetFromCString(dest, "shmesting");
 	src = myStringAlloc();
 	assert(src->_array == NULL);
 
 	got = myStringCat(dest, src);
-	printf("   - test #4: expected %d, got %d.\n", PASS, got);
+	printf("   - test #3: expected %d, got %d.\n", PASS, got);
 	myStringFree(dest);
 	dest = NULL;
 	myStringFree(src);
 	src = NULL;
-
-//	test #5: both MyStrings are initialized with an array - PASS
-//	dest = myStringAlloc();
-//	myStringSetFromCString(src, "good ");
-//	src = myStringAlloc();
-//	myStringSetFromCString(src, "times");
-//
-//	got = myStringCat(dest, src);
-//	printf("   - test #5: expected %d, got %d.\n\n", PASS, got);
-//	myStringFree(dest);
-//	dest = NULL;
-//	myStringFree(src);
-//	src = NULL;
 }
 
 void myStringCatToDriver()
@@ -990,19 +964,19 @@ void myStringCompareDriver()
 
 int main()
 {
-//	reallocMyStringDriver();
-//	myStringAllocFreeDriver();
-//	myStringSetFromCStringDriver();
-//	myStringSetFromMyStringDriver();
-//	myStringCloneDriver();
-//	myStringFilterDriver();
-//	myStringLenDriver();
+	reallocMyStringDriver();
+	myStringAllocFreeDriver();
+	myStringSetFromCStringDriver();
+	myStringSetFromMyStringDriver();
+	myStringCloneDriver();
+	myStringFilterDriver();
+	myStringLenDriver();
 	myStringCatDriver();
 	myStringCatToDriver();
-//	myStringToCStringDriver();
-//	myStringSetFromIntDriver();
-//	myStringToIntDriver();
-//	myStringCompareDriver();
+	myStringToCStringDriver();
+	myStringSetFromIntDriver();
+	myStringToIntDriver();
+	myStringCompareDriver();
 
 	return 0;
 }
