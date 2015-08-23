@@ -202,7 +202,9 @@ int myStringCompare(const MyString *str1, const MyString *str2);
  * 	And a value less than zero indicates the opposite.
  * 	If strings cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
-int myStringCustomCompare(const MyString *str1, const MyString *str2, void (*cmp)());
+int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)(const
+                                                                                 MyString*,
+																				 const MyString*));
 
 
 /**
@@ -231,7 +233,8 @@ int myStringEqual(const MyString *str1, const MyString *str2);
  * 	A greater than zero value indicates that the strings are equal.
  * 	If string cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
- int myStringCustomEqual(const MyString *str1, const MyString *str2, void (*cmp)());
+ int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
+																				const MyString*));
 
 
 /**
@@ -263,7 +266,7 @@ MyStringRetVal myStringWrite(const MyString *str, FILE *stream);
  * 
  * RETURN VALUE:none
   */
-void myStringCoustomSort(MyString *arr, size_t len, void (*cmp)(MyString*, MyString*));
+void myStringCoustomSort(MyString *arr, size_t len, int (*cmp)(const void *, const void *));
 
 
 /**
