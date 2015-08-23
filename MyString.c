@@ -302,13 +302,9 @@ char *myStringToCString(const MyString *str)
 
 MyStringRetVal myStringCatTo(const MyString *str1, const MyString *str2, MyString *result)//toTest
 {
-	if (str1 == NULL || str2 == NULL)
+	if (str1 == NULL || str2 == NULL || result == NULL)
 	{
 		return MYSTRING_ERROR;
-	}
-	if (result == NULL)
-	{
-		result = myStringAlloc();
 	}
 	int reallocStatus = reallocMyString(result, str1->_length + str2->_length);
 	if (reallocStatus)
