@@ -313,7 +313,7 @@ MyStringRetVal myStringCat(MyString *dest, const MyString *src)
 	{
 		return MYSTRING_ERROR;
 	}
-	int reallocStatus = reallocMyString(dest, dest->_length + src->_length + 1);
+	int reallocStatus = reallocMyString(dest, dest->_length + src->_length);
 	if (reallocStatus)
 	{
 		return MYSTRING_ERROR;
