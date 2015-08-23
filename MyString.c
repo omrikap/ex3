@@ -699,17 +699,17 @@ void myStringCatDriver()
 	dest = NULL;
 
 //	test #3: dest._arr is NULL - PASS
-	dest = myStringAlloc();
-	assert(dest->_array == NULL);
-	src = myStringAlloc();
-	myStringSetFromCString(src, "testing");
-
-	got = myStringCat(dest, src);
-	printf("   - test #3: expected %d, got %d.\n", PASS, got);
-	myStringFree(dest);
-	dest = NULL;
-	myStringFree(src);
-	src = NULL;
+//	dest = myStringAlloc();
+//	assert(dest->_array == NULL);
+//	src = myStringAlloc();
+//	myStringSetFromCString(src, "testing");
+//
+//	got = myStringCat(dest, src);
+//	printf("   - test #3: expected %d, got %d.\n", PASS, got);
+//	myStringFree(dest);
+//	dest = NULL;
+//	myStringFree(src);
+//	src = NULL;
 
 //	test #4: src._arr is NULL - PASS
 	dest = myStringAlloc();
@@ -725,17 +725,17 @@ void myStringCatDriver()
 	src = NULL;
 
 //	test #5: both MyStrings are initialized with an array - PASS
-	dest = myStringAlloc();
-	myStringSetFromCString(src, "good ");
-	src = myStringAlloc();
-	myStringSetFromCString(src, "times");
-
-	got = myStringCat(dest, src);
-	printf("   - test #5: expected %d, got %d.\n\n", PASS, got);
-	myStringFree(dest);
-	dest = NULL;
-	myStringFree(src);
-	src = NULL;
+//	dest = myStringAlloc();
+//	myStringSetFromCString(src, "good ");
+//	src = myStringAlloc();
+//	myStringSetFromCString(src, "times");
+//
+//	got = myStringCat(dest, src);
+//	printf("   - test #5: expected %d, got %d.\n\n", PASS, got);
+//	myStringFree(dest);
+//	dest = NULL;
+//	myStringFree(src);
+//	src = NULL;
 }
 
 void myStringCatToDriver()
