@@ -15,9 +15,12 @@
  * This program is able to tell if two strings are different from each other, and
  * to order them lexicographically.
  ********************************************************************************/
-#ifdef NDEBUG
+//#ifdef NDEBUG
 #define MAX_INPUT_SIZE 500
 
+/**
+ * @brief A little program to compare strings.
+ */
 int main()
 {
 	char cStrA[MAX_INPUT_SIZE];

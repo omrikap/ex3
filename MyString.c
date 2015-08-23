@@ -30,6 +30,9 @@
 
 // -------------------------- const definitions -------------------------
 
+/**
+ * @brief An implementation of the struct from MyString.h
+ */
 struct _MyString
 {
 	char *_array;
@@ -125,7 +128,7 @@ static int voidAdapterCompare(const void *str1, const void *str2)
  * O(n)
  */
 int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
-																			   const MyString*))
+						const MyString*))
 {
 	if (str1 == NULL || str2 == NULL)
 	{
@@ -138,7 +141,7 @@ int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(c
  * O(n)
  */
 int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
-																				 const MyString*))
+						  const MyString*))
 {
 	if (str1 == NULL || str2 == NULL)
 	{
@@ -319,7 +322,7 @@ MyStringRetVal myStringSetFromInt(MyString *str, int n)
 		n = reduceModulo(n);
 		intLength--;
 	}
-	if (negative)
+	if ((negative))
 		str->_array[0] = '-';
 	return MYSTRING_SUCCESS;
 }
@@ -416,7 +419,7 @@ MyStringRetVal myStringFilter(MyString *str, bool (*filt)(const char *))
 	if (str->_length > 0)
 	{
 		int tmp_index = 0;
-		for (size_t i=0; i < str->_length; ++i)
+		for (size_t i = 0; i < str->_length; ++i)
 		{
 			if (!filt(&str->_array[i]))
 			{
@@ -478,7 +481,7 @@ MyStringRetVal myStringSetFromCString(MyString *str, const char *cString)
 
 	const char *head = cString;
 	size_t i = 0;
-	while (*cString++)
+	while ((*cString++))
 		i++;
 	assert(i != 0);
 	reallocMyString(str, i);

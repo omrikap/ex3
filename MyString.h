@@ -202,8 +202,7 @@ int myStringCompare(const MyString *str1, const MyString *str2);
  * 	If strings cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
 int myStringCustomCompare(const MyString *str1, const MyString *str2, int (*cmp)(const
-                                                                                 MyString*,
-																				 const MyString*));
+                          MyString*, const MyString*));
 
 
 /**
@@ -233,7 +232,7 @@ int myStringEqual(const MyString *str1, const MyString *str2);
  * 	If string cannot be compared, the return value should be MYSTR_ERROR_CODE
  */
  int myStringCustomEqual(const MyString *str1, const MyString *str2, int (*cmp)(const MyString*,
-																				const MyString*));
+						 const MyString*));
 
 
 /**
