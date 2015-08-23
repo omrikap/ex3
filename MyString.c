@@ -60,6 +60,7 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 		}
 		str->_array = reallocArr;
 		free(reallocArr);
+		reallocArr = NULL;
 	}
 	str->_length = size; // if length >= size, just change length
 	return MYSTRING_SUCCESS;
@@ -326,7 +327,7 @@ MyStringRetVal myStringCat(MyString *dest, const MyString *src)
 	{
 		return MYSTRING_ERROR;
 	}
-	int reallocStatus = reallocMyString(dest, dest->_length + src->_length);
+	int reallocStatus = reallocMyString(dest, dest->_length + src->_length + 1);
 	if (reallocStatus)
 	{
 		return MYSTRING_ERROR;
