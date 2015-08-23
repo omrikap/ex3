@@ -43,26 +43,14 @@ static MyStringRetVal reallocMyString(MyString *str, size_t size)
 	{
 		return MYSTRING_ERROR;
 	}
-	else if (str->_length < size)
+	if (str->_length != size)
 	{
-		if (str->_array == NULL)
+		char *reallocArr = (char *) realloc(str->_array, size);
+		if (reallocArr == NULL)
 		{
-			free(str->_array);
-			str->_array = (char *) malloc(size);
-			if (str->_array == NULL)
-			{
-				return MYSTRING_ERROR;
-			}
+			return MYSTRING_ERROR;
 		}
-		else
-		{
-			char *reallocArr = (char *) realloc(str->_array, size);
-			if (reallocArr == NULL)
-			{
-				return MYSTRING_ERROR;
-			}
-			str->_array = reallocArr;
-		}
+		str->_array = reallocArr;
 	}
 	str->_length = size; // if length >= size, just change length
 	return MYSTRING_SUCCESS;
