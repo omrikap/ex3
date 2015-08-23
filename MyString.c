@@ -1014,7 +1014,7 @@ int main()
 //	myStringCloneDriver();
 //	myStringFilterDriver();
 //	myStringLenDriver();
-//	myStringCatDriver();
+	myStringCatDriver();
 	myStringCatToDriver();
 //	myStringToCStringDriver();
 //	myStringSetFromIntDriver();
